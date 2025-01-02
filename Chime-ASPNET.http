@@ -1,0 +1,6 @@
+@Chime_ASPNET_HostAddress = http://localhost:5270
+
+GET {{Chime_ASPNET_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
