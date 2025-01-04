@@ -1,15 +1,15 @@
-using Chime_ASPNET.Data;
-using Chime_ASPNET.Models.Config;
-using Chime_ASPNET.Repositories.Auth;
-using Chime_ASPNET.Services.Auth;
-using Chime_ASPNET.Services.Email;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
+using Chime_ASPNET.Data;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Converters;
+using Chime_ASPNET.Services.Auth;
+using Chime_ASPNET.Models.Config;
+using Chime_ASPNET.Services.Email;
+using Microsoft.Extensions.Options;
+using Microsoft.EntityFrameworkCore;
+using Chime_ASPNET.Repositories.Auth;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 var builder = WebApplication.CreateBuilder(args);
 
