@@ -150,4 +150,10 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
 
     services.AddSingleton<EmailQueue>();
     #endregion
+
+    #region Services Configuration
+    services.AddScoped<IAuthService, AuthService>();
+
+    services.AddSingleton<IEmailService, EmailService>();
+    #endregion
 }
