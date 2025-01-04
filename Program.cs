@@ -1,4 +1,6 @@
+using Chime_ASPNET.Data;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,6 +37,13 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
         options.AssumeDefaultVersionWhenUnspecified = true;
         options.DefaultApiVersion = new ApiVersion(1, 0);
         options.ReportApiVersions = true;
+    });
+    #endregion
+
+    #region SQL Server Configuration 
+    services.AddDbContext<DataContext>(options =>
+    {
+        options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
     });
     #endregion
 }
