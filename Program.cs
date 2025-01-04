@@ -2,6 +2,7 @@ using Chime_ASPNET.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -57,6 +58,44 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
     {
         options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
         options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    });
+    #endregion
+
+    #region Swagger Documentation 
+    services.AddSwaggerGen(c =>
+    {
+        c.SwaggerDoc("v1", new OpenApiInfo
+        {
+            Title = "Chime ASP.NET API",
+            Version = "v1",
+            Description = "Chime is a simple API for sharing updates and connecting with others.",
+            Contact = new OpenApiContact
+            {
+                Name = "Shiela Mae Lepon",
+                Email = "shiela.mlepon@gmail.com"
+            }
+        });
+
+        c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+        {
+            Name = "Authorization",
+            Description = "JWT Authorization header using the Bearer scheme.",
+            Scheme = "Bearer",
+            In = ParameterLocation.Header,
+            Type = SecuritySchemeType.ApiKey
+        });
+
+        c.AddSecurityRequirement(new OpenApiSecurityRequirement
+        {
+            {
+                new OpenApiSecurityScheme {
+                    Reference = new OpenApiReference {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                    }
+                }, []
+            }
+        });
     });
     #endregion
 
