@@ -125,4 +125,8 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
     services.AddSingleton(resolver =>
         resolver.GetRequiredService<IOptions<SMTPSettings>>().Value);
     #endregion
+
+    #region Logging Configuration 
+    services.AddLogging();
+    #endregion
 }
