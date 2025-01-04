@@ -119,4 +119,10 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
     services.AddSingleton(resolver =>
         resolver.GetRequiredService<IOptions<AppSettings>>().Value);
     #endregion
+
+    #region SMTP Data Binding 
+    services.Configure<SMTPSettings>(configuration.GetSection("SMTP"));
+    services.AddSingleton(resolver =>
+        resolver.GetRequiredService<IOptions<SMTPSettings>>().Value);
+    #endregion
 }
