@@ -113,4 +113,10 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
     services.AddSingleton(resolver =>
         resolver.GetRequiredService<IOptions<JWTSettings>>().Value);
     #endregion
+
+    #region Applicaton Data Binding 
+    services.Configure<AppSettings>(configuration.GetSection("Application"));
+    services.AddSingleton(resolver =>
+        resolver.GetRequiredService<IOptions<AppSettings>>().Value);
+    #endregion
 }
