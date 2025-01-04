@@ -13,8 +13,6 @@ using Newtonsoft.Json.Converters;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddControllers()
     .AddNewtonsoftJson(options =>
     {
@@ -23,7 +21,7 @@ builder.Services.AddControllers()
         options.SerializerSettings.Converters.Add(new StringEnumConverter());
     });
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -31,8 +29,19 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 #endregion
 
+
 ConfigureServices(builder.Services, builder.Configuration, builder.Environment);
 var app = builder.Build();
+
+
+#region Automatic Database Migration
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var context = services.GetRequiredService<DataContext>();
+    context.Database.Migrate();
+}
+#endregion
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
