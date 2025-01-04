@@ -1,5 +1,6 @@
 using Chime_ASPNET.Data;
 using Chime_ASPNET.Models.Config;
+using Chime_ASPNET.Repositories.Auth;
 using Chime_ASPNET.Services.Auth;
 using Chime_ASPNET.Services.Email;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -155,5 +156,9 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
     services.AddScoped<IAuthService, AuthService>();
 
     services.AddSingleton<IEmailService, EmailService>();
+    #endregion
+
+    #region Repositories Configuration
+    services.AddScoped<IAuthRepository, AuthRepository>();
     #endregion
 }
