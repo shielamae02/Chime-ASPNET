@@ -63,6 +63,18 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
     });
     #endregion
 
+    #region CORs Configuration 
+    services.AddCors(options =>
+    {
+        options.AddPolicy("AllowAll", builder =>
+        {
+            builder.AllowAnyOrigin()
+                   .AllowAnyMethod()
+                   .AllowAnyHeader();
+        });
+    });
+    #endregion
+
     #region Swagger Documentation 
     services.AddSwaggerGen(c =>
     {
