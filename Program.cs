@@ -31,6 +31,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 #endregion
 
+ConfigureServices(builder.Services, builder.Configuration, builder.Environment);
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
