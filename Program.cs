@@ -1,4 +1,5 @@
 using Chime_ASPNET.Data;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -46,4 +47,17 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
         options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
     });
     #endregion
+
+    #region Authentication Configuration 
+    var isDevelopment = environment.IsDevelopment();
+    var jwt = configuration.GetSection("JWT");
+    var key = jwt["Key"];
+
+    services.AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    });
+    #endregion
+
 }
