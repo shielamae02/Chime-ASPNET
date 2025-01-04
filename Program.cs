@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Mvc;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -23,3 +25,16 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+
+static void ConfigureServices(IServiceCollection services, IConfiguration configuration, IHostEnvironment environment)
+{
+    #region API Versioning
+    services.AddApiVersioning(options =>
+    {
+        options.AssumeDefaultVersionWhenUnspecified = true;
+        options.DefaultApiVersion = new ApiVersion(1, 0);
+        options.ReportApiVersions = true;
+    });
+    #endregion
+}
