@@ -1,7 +1,9 @@
 using Chime_ASPNET.Data;
+using Chime_ASPNET.Models.Config;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -106,4 +108,9 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
     });
     #endregion
 
+    #region JWT Data Binding 
+    services.Configure<JWTSettings>(configuration.GetSection("JWT"));
+    services.AddSingleton(resolver =>
+        resolver.GetRequiredService<IOptions<JWTSettings>>().Value);
+    #endregion
 }
