@@ -1,5 +1,7 @@
 using Chime_ASPNET.Data;
 using Chime_ASPNET.Models.Config;
+using Chime_ASPNET.Services.Auth;
+using Chime_ASPNET.Services.Email;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -140,5 +142,12 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
 
     #region Logging Configuration 
     services.AddLogging();
+    #endregion
+
+    #region Background Services Configuration 
+    services.AddHostedService<AuthBackgroundService>();
+    services.AddHostedService<EmailBackgroundService>();
+
+    services.AddSingleton<EmailQueue>();
     #endregion
 }
