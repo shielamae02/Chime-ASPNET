@@ -83,6 +83,31 @@ namespace Chime_ASPNET.Controllers
             }
         }
 
+        [HttpPost("refresh")]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        public async Task<IActionResult> RefreshUserToken([FromBody] RefreshTokenDto request)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ControllerUtil.GenerateValidationError(ModelState));
+
+            try
+            {
+                var response = await authService.RefreshUserTokenAsync(request);
+
+                return response.Status.Equals("error")
+                    ? ControllerUtil.GetResultFromError(response)
+                    : Ok(response);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An exception occurred while refreshing the user token.");
+                return Problem("An error occurred while processing your request. Please try again later.");
+            }
+        }
+
+        
+
 
 
     }
