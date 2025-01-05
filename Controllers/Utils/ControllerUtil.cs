@@ -29,4 +29,21 @@ public static class ControllerUtil
             _ => new BadRequestObjectResult(apiResponse)
         };
     }
+
+    public static ApiResponse<object> GenerateValidationError(ModelStateDictionary modelState)
+    {
+        var validationErrors = modelState
+            .Where(ms => ms.Value.Errors.Count > 0)
+            .ToDictionary(
+                kvp => char.ToLower(kvp.Key[0]) + kvp.Key[1..],
+                kvp => string.Join("; ", kvp.Value!.Errors.Select(e => e.ErrorMessage))
+            // kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).FirstOrDefault()
+            );
+
+        return ApiResponse<object>.ErrorResponse(
+            "Validation failed.",
+            ErrorType.ValidationError,
+            validationErrors
+        );
+    }
 }
