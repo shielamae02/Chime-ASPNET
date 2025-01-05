@@ -10,7 +10,6 @@ public class BaseUserDto
     [StringLength(100, ErrorMessage = "Email cannot exceed 100 characters.")]
     public string Email { get; init; } = string.Empty;
 
-    [Required(ErrorMessage = "Username is required.")]
     [StringLength(100, MinimumLength = 2, ErrorMessage = "Username must be at least 2 characters.")]
-    public string? Username { get; init; }
+    public virtual string? Username { get; init; }
 }
