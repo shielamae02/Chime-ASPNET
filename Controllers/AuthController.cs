@@ -37,7 +37,30 @@ namespace Chime_ASPNET.Controllers
             }
         }
 
-        
+        [HttpPost("login")]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        public async Task<IActionResult> LoginUser([FromBody] LoginDto request)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ControllerUtil.GenerateValidationError(ModelState));
+
+            try
+            {
+                var response = await authService.LoginUserAsync(request);
+
+                return response.Status.Equals("error")
+                    ? ControllerUtil.GetResultFromError(response)
+                    : Ok(response);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An exception occurred while logging in the user.");
+                return Problem("An error occurred while processing your request. Please try again later.");
+            }
+        }
+
+    
 
     }
 }
