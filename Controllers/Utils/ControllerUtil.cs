@@ -15,4 +15,18 @@ public static class ControllerUtil
         return int.TryParse(userIdString, out var userId) ? userId : -1;
     }
 
+    public static IActionResult GetResultFromError<T>(ApiResponse<T> apiResponse)
+    {
+        var errorType = apiResponse.ErrorType;
+
+        return errorType switch
+        {
+            ErrorType.NotFound => new NotFoundObjectResult(apiResponse),
+            ErrorType.BadRequest => new BadRequestObjectResult(apiResponse),
+            ErrorType.ValidationError => new BadRequestObjectResult(apiResponse),
+            ErrorType.Unauthorized => new UnauthorizedObjectResult(apiResponse),
+            ErrorType.InternalServerError => new StatusCodeResult(500),
+            _ => new BadRequestObjectResult(apiResponse)
+        };
+    }
 }
