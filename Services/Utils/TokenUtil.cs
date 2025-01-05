@@ -89,4 +89,16 @@ public static class TokenUtil
             return null;
         }
     }
+
+    public static bool IsTokenNearExpiration(ClaimsPrincipal principal, int bufferMinutes)
+    {
+        var expClaim = principal.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Exp)?.Value;
+        if (string.IsNullOrEmpty(expClaim) || !long.TryParse(expClaim, out var expSeconds))
+        {
+            return true;
+        }
+
+        var expirationTime = DateTimeOffset.FromUnixTimeSeconds(expSeconds).UtcDateTime;
+        return expirationTime < DateTime.UtcNow.AddMinutes(bufferMinutes);
+    }
 }
