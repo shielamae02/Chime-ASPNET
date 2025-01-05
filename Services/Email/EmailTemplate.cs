@@ -92,4 +92,14 @@ public static class EmailTemplate
         .Replace("{{content}}", content);
     }
 
+    public static string ForgotPasswordTemplate(string content, string action)
+    {
+        return """
+        <p>{{content}}</p>
+        <a href="{{action}}" class="btn">Reset Password</a>
+        """
+        .Replace("{{content}}", content)
+        .Replace("{{action}}", action);
+    }
+
 }
