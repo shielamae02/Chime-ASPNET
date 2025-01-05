@@ -351,6 +351,22 @@ public class AuthService(
     }
     #endregion
 
+    #region CreateAndSaveTokens
+    private async Task<TokenDto> CreateAndSaveTokensAsync(User user)
+    {
+        var tokens = TokenUtil.GenerateTokens(user, jwt);
+        await authRepository.SaveTokenAsync(
+            user,
+            tokens.Refresh,
+            DateTime.UtcNow.AddDays(jwt.RefreshTokenExpiry),
+            Token.TokenType.Refresh
+        );
+
+        return tokens;
+    }
+    #endregion
+
+    
 
 
 }
