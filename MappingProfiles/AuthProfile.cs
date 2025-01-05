@@ -1,6 +1,6 @@
 using AutoMapper;
-using Chime_ASPNET.Models.Dtos.Auth;
 using Chime_ASPNET.Models.Entities;
+using Chime_ASPNET.Models.Dtos.Auth;
 
 namespace Chime_ASPNET.MappingProfiles;
 
