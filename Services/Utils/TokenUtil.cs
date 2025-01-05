@@ -62,4 +62,31 @@ public static class TokenUtil
                 : refresh
         };
     }
+
+    public static ClaimsPrincipal? ValidateToken(string token, JWTSettings jwt, IHostEnvironment environment)
+    {
+        var isDevelopment = environment.IsDevelopment();
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var key = Base64UrlEncoder.DecodeBytes(jwt.Key);
+
+        try
+        {
+            var principal = tokenHandler.ValidateToken(token, new TokenValidationParameters
+            {
+                ValidateIssuer = !isDevelopment,
+                ValidIssuer = jwt.Issuer,
+                ValidateAudience = !isDevelopment,
+                ValidAudience = jwt.Audience,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                ValidateIssuerSigningKey = true,
+                ValidateLifetime = true
+            }, out SecurityToken validatedToken);
+
+            return principal;
+        }
+        catch (Exception)
+        {
+            return null;
+        }
+    }
 }
