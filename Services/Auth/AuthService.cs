@@ -272,6 +272,55 @@ public class AuthService(
     }
     #endregion
 
+    #region RegisterAsync
+    private async Task<ApiResponse<AuthDto>> RegisterAsync<T>(
+        T request, Action<User, T>? customizeUser = null) where T : BaseUserDto
+    {
+        var validationErrors = new Dictionary<string, string>();
+
+        var isUserExist = await authRepository.IsUserExistByCredentialAsync(request.Email, request.Username);
+        if (isUserExist)
+        {
+            validationErrors.Add("credentials", "Invalid credentials.");
+            return ApiResponse<AuthDto>.ErrorResponse(
+                Error.ValidationError,
+                Error.ErrorType.ValidationError,
+                validationErrors
+            );
+        }
+
+        await using var transaction = await context.Database.BeginTransactionAsync();
+        try
+        {
+            var user = mapper.Map<User>(request);
+            customizeUser?.Invoke(user, request);
+
+            await authRepository.AddUserAsync(user);
+
+            var tokens = await CreateAndSaveTokensAsync(user);
+
+            var response = new AuthDto
+            {
+                Token = tokens,
+                User = mapper.Map<UserDto>(user)
+            };
+
+            await transaction.CommitAsync();
+            return ApiResponse<AuthDto>.SuccessResponse(Success.IS_AUTHENTICATED, response);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "An unexpected error occurred in the register service.");
+
+            await transaction.RollbackAsync();
+            return ApiResponse<AuthDto>.ErrorResponse(
+                Error.ServerError,
+                Error.ErrorType.InternalServerError
+            );
+        }
+    }
+    #endregion
+
 
 
 }
