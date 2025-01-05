@@ -45,6 +45,15 @@ public class AuthService(
         return await RegisterAsync(request, null);
     }
     #endregion
+    #region RegisterUser
+    public async Task<ApiResponse<AuthDto>> RegisterUserAsync(RegisterDto request)
+    {
+        return await RegisterAsync(request, (user, registerDto) =>
+        {
+            user.Password = PasswordUtil.HashPassword(registerDto.Password);
+        });
+    }
+    #endregion
 
-    
+
 }
