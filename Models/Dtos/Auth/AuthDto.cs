@@ -1,4 +1,4 @@
-using Chime_ASPNET.Models.Dtos.User;
+using Chime_ASPNET.Models.Dtos.Users;
 
 namespace Chime_ASPNET.Models.Dtos.Auth;
 
