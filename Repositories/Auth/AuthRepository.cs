@@ -48,5 +48,19 @@ namespace Chime_ASPNET.Repositories.Auth
             await context.SaveChangesAsync();
         }
 
+        public async Task SaveTokenAsync(User user, string refresh, DateTime exprires, Token.TokenType type)
+        {
+            var token = new Token
+            {
+                User = user,
+                UserId = user.Id,
+                Value = refresh,
+                ExpiresAt = exprires,
+                Type = type
+            };
+
+            await context.Tokens.AddAsync(token);
+            await context.SaveChangesAsync();
+        }
     }
 }
