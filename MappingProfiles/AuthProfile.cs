@@ -10,5 +10,6 @@ public class AuthProfile : Profile
     {
         CreateMap<RegisterDto, User>();
         CreateMap<LoginDto, User>();
+        CreateMap<OAuthDto, User>();
     }
 }
