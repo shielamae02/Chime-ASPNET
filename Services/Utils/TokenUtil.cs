@@ -67,7 +67,7 @@ public static class TokenUtil
     {
         var isDevelopment = environment.IsDevelopment();
         var tokenHandler = new JwtSecurityTokenHandler();
-        var key = Base64UrlEncoder.DecodeBytes(jwt.Key);
+        var key = Encoding.UTF8.GetBytes(jwt.Key);
 
         try
         {
