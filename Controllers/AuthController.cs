@@ -60,7 +60,30 @@ namespace Chime_ASPNET.Controllers
             }
         }
 
-    
+        [HttpPost("oauth-callback")]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        public async Task<IActionResult> OAuthCallback([FromBody] OAuthDto request)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ControllerUtil.GenerateValidationError(ModelState));
+
+            try
+            {
+                var response = await authService.OAuthCallbackAsync(request);
+
+                return response.Status.Equals("error")
+                    ? ControllerUtil.GetResultFromError(response)
+                    : StatusCode(StatusCodes.Status201Created, response);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An exception occurred during oauth callback.");
+                return Problem("An error occurred while processing your request. Please try again later.");
+            }
+        }
+
+
 
     }
 }
