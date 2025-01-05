@@ -20,5 +20,15 @@ namespace Chime_ASPNET.Repositories.Auth
                 .AnyAsync();
         }
 
+         public async Task<User?> GetUserByCredentialsAsync(string email, string? providerId = null, User.AuthenticationType? provider = null)
+        {
+            return await context.Users
+                .Include(u => u.Tokens)
+                .Where(u => u.Email == email
+                            && (providerId == null || u.ProviderId == providerId)
+                            && (provider == null || u.Provider == provider))
+                .FirstOrDefaultAsync();
+        }
+
     }
 }
