@@ -16,4 +16,9 @@ public class EmailQueue(ILogger<EmailQueue> logger)
 
         _emailQueue.Enqueue((emailList, subject, content));
     }
+
+    public bool TryDequeue(out (IEnumerable<string> emails, string subject, string content) email)
+    {
+        return _emailQueue.TryDequeue(out email);
+    }
 }
