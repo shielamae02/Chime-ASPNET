@@ -32,7 +32,9 @@ namespace Chime_ASPNET.Repositories.Auth
 
         public async Task<Token?> GetTokenByRefreshAsync(string refresh)
         {
-            return await context.Tokens.FirstOrDefaultAsync(t => t.Value == refresh);
+            return await context.Tokens
+                .Include(t => t.User)
+                .FirstOrDefaultAsync(t => t.Value == refresh);
         }
 
         public async Task RemoveRevokedTokensAsync()
