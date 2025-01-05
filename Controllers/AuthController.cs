@@ -126,10 +126,25 @@ namespace Chime_ASPNET.Controllers
             }
         }
 
-        
+        [HttpPost("forgot-password")]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto request)
+        {
+            if (!ModelState.IsValid) return BadRequest(ControllerUtil.GenerateValidationError(ModelState));
 
+            try
+            {
+                var response = await authService.ForgotPasswordAsync(request);
 
-
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An exception occurred while refreshing the user token.");
+                return Problem("An error occurred while processing your request. Please try again later.");
+            }
+        }
 
     }
 }
