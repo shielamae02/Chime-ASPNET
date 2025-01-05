@@ -169,7 +169,93 @@ public class AuthService(
     }
     #endregion
 
+    #region ResetPassword
+    public async Task<ApiResponse<object>> ResetPasswordAsync(string resetToken, ResetPasswordDto request)
+    {
+        var validationErrors = new Dictionary<string, string>();
 
+        var principal = TokenUtil.ValidateToken(resetToken, jwt, env);
+        if (principal is null)
+        {
+            validationErrors.Add("token", "Invalid reset token.");
+            return ApiResponse<object>.ErrorResponse(
+                Error.Unauthorized,
+                Error.ErrorType.Unauthorized,
+                validationErrors
+            );
+        }
 
+        var purposeClaim = principal.Claims.FirstOrDefault(
+            c => c.Type == "purpose" && c.Value == "reset-password")?.Value;
+
+        var emailClaim = principal.Claims.FirstOrDefault(
+            c => c.Type == ClaimTypes.Email)?.Value;
+
+        if (string.IsNullOrEmpty(purposeClaim) || string.IsNullOrEmpty(emailClaim))
+        {
+            validationErrors.Add("token", "Invalid reset token.");
+            return ApiResponse<object>.ErrorResponse(
+                Error.Unauthorized,
+                Error.ErrorType.Unauthorized,
+                validationErrors
+            );
+        }
+
+        var user = await authRepository.GetUserByCredentialsAsync(emailClaim);
+        if (user is null)
+        {
+            validationErrors.Add("user", "Invalid credentials.");
+            return ApiResponse<object>.ErrorResponse(
+               Error.Unauthorized,
+               Error.ErrorType.Unauthorized,
+               validationErrors
+           );
+        }
+
+        var isTokenValid = user.Tokens.Any(t =>
+            t.Value == resetToken &&
+            !t.IsRevoked &&
+            t.ExpiresAt > DateTime.UtcNow
+        );
+
+        if (!isTokenValid)
+        {
+            validationErrors.Add("token", "It looks like you clicked on an invalid password reset link. Please try again.");
+            return ApiResponse<object>.ErrorResponse(
+               Error.Unauthorized,
+               Error.ErrorType.Unauthorized,
+               validationErrors
+           );
+        }
+
+        await using var transaction = await context.Database.BeginTransactionAsync();
+        try
+        {
+            var activeTokens = user.Tokens.Where(t => t.ExpiresAt > DateTime.Now && !t.IsRevoked);
+            foreach (var activeToken in activeTokens)
+            {
+                activeToken.IsRevoked = true;
+            }
+
+            user.Password = PasswordUtil.HashPassword(request.Password);
+
+            await context.SaveChangesAsync();
+            await transaction.CommitAsync();
+
+            return ApiResponse<object>.SuccessResponse(
+                Success.RESOURCE_UPDATED("Password"), null);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "An unexpected error occurred in the reset password service.");
+
+            await transaction.RollbackAsync();
+            return ApiResponse<object>.ErrorResponse(
+                Error.ValidationError,
+                Error.ErrorType.InternalServerError
+            );
+        }
+    }
+    #endregion
 
 }
