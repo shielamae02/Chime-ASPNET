@@ -19,7 +19,7 @@ public sealed class User : BaseEntity
     public string? ProviderId { get; set; }
     public string? FirstName { get; set; }
     public string? LastName { get; set; }
-    public string? ProfilePicture { get; set; }
+    public string? Image { get; set; }
     public string? Password { get; set; }
 
     public ICollection<Token> Tokens { get; init; } = new List<Token>();
