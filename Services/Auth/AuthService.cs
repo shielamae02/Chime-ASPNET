@@ -366,7 +366,11 @@ public class AuthService(
     }
     #endregion
 
-    
-
-
+    #region CleanUpTokens
+    public async Task CleanUpTokensAsync()
+    {
+        await authRepository.RemoveRevokedTokensAsync();
+        await context.SaveChangesAsync();
+    }
+    #endregion
 }
