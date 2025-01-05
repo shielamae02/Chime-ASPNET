@@ -127,6 +127,48 @@ public class AuthService(
     }
     #endregion
 
+    #region ForgotPassword
+    public async Task<ApiResponse<object>> ForgotPasswordAsync(ForgotPasswordDto request)
+    {
+        await using var transaction = await context.Database.BeginTransactionAsync();
+        try
+        {
+            var user = await authRepository.GetUserByCredentialsAsync(request.Email);
+
+            if (user is not null && user.Provider == User.AuthenticationType.Local)
+            {
+                var resetToken = TokenUtil.GenerateToken(user, jwt, Token.TokenType.Reset);
+                var resetUrl = $"{app.URL}?token={resetToken}";
+
+                await authRepository.SaveTokenAsync(
+                    user,
+                    resetToken,
+                    DateTime.UtcNow.AddMinutes(jwt.ResetTokenExpiry),
+                    Token.TokenType.Reset
+                );
+
+                emailQueue.QueueEmail(
+                    [user.Email],
+                    "Password Reset Request",
+                    EmailTemplate.ForgotPasswordTemplate("Password Reset Request", resetUrl)
+                );
+
+                await transaction.CommitAsync();
+            }
+
+            return ApiResponse<object>.SuccessResponse(Success.PASSWORD_RESET_LINK_SENT, null);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "An unexpected error occurred in the forgot password service.");
+
+            await transaction.RollbackAsync();
+            return ApiResponse<object>.ErrorResponse(
+                Error.ServerError, Error.ErrorType.InternalServerError);
+        }
+    }
+    #endregion
+
 
 
 
