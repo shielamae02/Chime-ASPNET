@@ -41,5 +41,12 @@ namespace Chime_ASPNET.Repositories.Auth
                 .Where(t => t.IsRevoked || t.ExpiresAt < DateTime.UtcNow)
                 .ExecuteDeleteAsync();
         }
+
+        public async Task AddUserAsync(User user)
+        {
+            await context.Users.AddAsync(user);
+            await context.SaveChangesAsync();
+        }
+
     }
 }
