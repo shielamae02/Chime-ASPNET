@@ -1,3 +1,4 @@
+using System.Text;
 using Newtonsoft.Json;
 using Chime_ASPNET.Data;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +10,7 @@ using Chime_ASPNET.Services.Email;
 using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
 using Chime_ASPNET.Repositories.Auth;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -87,6 +89,20 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
     {
         options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
         options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = !isDevelopment,
+            ValidIssuer = jwt["Issuer"],
+            ValidateAudience = !isDevelopment,
+            ValidAudience = jwt["Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key!)),
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ClockSkew = TimeSpan.Zero
+        };
     });
     #endregion
 
