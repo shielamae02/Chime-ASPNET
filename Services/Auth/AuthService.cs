@@ -55,5 +55,18 @@ public class AuthService(
     }
     #endregion
 
+    #region LoginUser
+    public async Task<ApiResponse<AuthDto>> LoginUserAsync(LoginDto request)
+    {
+        return await LoginAsync(
+            request,
+            req => authRepository.GetUserByCredentialsAsync(request.Email),
+            (req, user) => PasswordUtil.VerifyPassword(user!.Password!, req.Password)
+        );
+    }
+    #endregion
+
+
+
 
 }
