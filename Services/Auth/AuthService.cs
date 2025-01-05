@@ -258,4 +258,20 @@ public class AuthService(
     }
     #endregion
 
+    #region LogoutUser
+    public async Task<bool> LogoutUserAsync(RefreshTokenDto request)
+    {
+        var token = await authRepository.GetTokenByRefreshAsync(request.Refresh);
+
+        if (token is null) return false;
+
+        token.IsRevoked = true;
+        await context.SaveChangesAsync();
+
+        return true;
+    }
+    #endregion
+
+
+
 }
