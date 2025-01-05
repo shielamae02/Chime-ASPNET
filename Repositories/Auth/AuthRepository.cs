@@ -35,6 +35,11 @@ namespace Chime_ASPNET.Repositories.Auth
             return await context.Tokens.FirstOrDefaultAsync(t => t.Value == refresh);
         }
 
-    
+        public async Task RemoveRevokedTokensAsync()
+        {
+            await context.Tokens
+                .Where(t => t.IsRevoked || t.ExpiresAt < DateTime.UtcNow)
+                .ExecuteDeleteAsync();
+        }
     }
 }
