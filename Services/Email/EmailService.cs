@@ -46,7 +46,7 @@ public class EmailService(
 
         message.Subject = subject;
 
-        var htmlBody = EmailTemplate.ForgotPasswordTemplate(subject, content);
+        var htmlBody = EmailTemplate.GetEmailTemplate(subject, content);
         message.Body = new TextPart("html") { Text = htmlBody };
 
 
