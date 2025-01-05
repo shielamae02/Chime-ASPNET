@@ -2,88 +2,94 @@ namespace Chime_ASPNET.Services.Email;
 
 public static class EmailTemplate
 {
-    public static string ForgotPasswordTemplate(string subject, string content)
+    public static string GetEmailTemplate(string subject, string content)
     {
         return """
             <!DOCTYPE html>
-                <html lang="en">
-                <head>
-                    <meta charset="UTF-8">
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <title>{{subject}}</title>
-                    <style>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>{{subject}}</title>
+                <style>
                     body {
-                        margin: 0;
-                        padding: 20px;
                         font-family: Arial, sans-serif;
-                        background-color: #F4F4F4;
+                        background-color: #f6f6f6;
+                        margin: 0;
+                        padding: 0;
                     }
-
                     .email-container {
-                        background-color: #FFFFFF;
-                        margin-top: 20px;
-                        padding: 20px;
-                        width: 100%;
+                        max-width: 600px;
+                        margin: 20px auto;
+                        background: #ffffff;
+                        border: 1px solid #ddd;
                         border-radius: 8px;
-                        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                        overflow: hidden;
                     }
-
                     .email-header {
-                        text-align: center;
+                        background-color: #164863;
+                        color: #ffffff;
                         padding: 20px;
-                        display: flex;
-                        flex-direction: column;
-                        gap: 8px;
+                        text-align: center;
                     }
-
                     .email-header h1 {
-                        color: #333333;
+                        margin: 0;
                         font-size: 24px;
-                        margin: 0;
                     }
-
-                    .email-header h2 {
-                        color: #555555;
-                        font-size: 18px;
-                        margin: 0;
-                    }
-
                     .email-body {
-                        text-align: center;
                         padding: 20px;
+                        color: #333333;
+                        line-height: 1.6;
+                        text-align: center;
+                        align-items: center;
                     }
-
-                    .email-body p {
-                        color: #555555;
-                        font-size: 16px;
+                    .email-body h2 {
+                        font-size: 20px;
+                        color: #164863;
                     }
-
-                    .email-body a {
-                        background-color: #007BFF;
-                        color: #FFFFFF;
+                    .email-footer {
+                        padding: 15px;
+                        text-align: center;
+                        font-size: 12px;
+                        color: #666666;
+                        border-top: 1px solid #ddd;
+                    }
+                    .btn {
+                        display: inline-block;
+                        padding: 10px 20px;
+                        margin-top: 20px;
+                        background-color: #DFF4F3;
+                        color: #ffffff;
                         text-decoration: none;
-                        padding: 12px 20px;
                         border-radius: 5px;
-                        font-size: 16px;
+                        text-decoration: none;
                     }
-                    </style>
-                </head>
-                <body>
-                    <div class="email-container">
+                    .btn:hover {
+                        background-color: #DDF2FD;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="email-container">
                     <div class="email-header">
                         <h1>Chime</h1>
-                        <h2>{{ subject }}</h2>
+                        <h2>{{subject}}</h2>
                     </div>
+                    
                     <div class="email-body">
-                        <p>We received a request to reset your password. If you did not request a password reset, please ignore this email.</p>
-                        <p>To reset your password, click the link below:</p>
-                        <a href="{{content}}">Reset Password</a>
+                        <div>{{content}}</div>
                     </div>
+                    
+                    <div class="email-footer">
+                        <p>&copy; 2024 Chime. All rights reserved.</p>
+                        <p>Please disregard this message if you did not request a password change.</p>
                     </div>
-                </body>
-                </html>
-            """
-            .Replace("{{subject}}", subject)
-            .Replace("{{content}}", content);
+                </div>
+            </body>
+            </html>
+        """
+        .Replace("{{subject}}", subject)
+        .Replace("{{content}}", content);
     }
+
 }
