@@ -29,4 +29,19 @@ public class ApiResponse<T>
             Data = data
         };
     }
+
+    public static ApiResponse<T> ErrorResponse(
+        string message,
+        ErrorType? errorType,
+        Dictionary<string, string>? validationErrors = null
+    )
+    {
+        return new ApiResponse<T>
+        {
+            Status = "error",
+            Message = message,
+            ErrorType = errorType,
+            ValidationErrors = validationErrors
+        };
+    }
 }
