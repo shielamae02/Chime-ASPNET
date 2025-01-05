@@ -10,5 +10,43 @@ namespace Chime_ASPNET.Services.Utils;
 
 public static class TokenUtil
 {
+    public static string GenerateToken(User user, JWTSettings jwt, Token.TokenType type)
+    {
+        var now = DateTime.Now;
+        var expires = type switch
+        {
+            Token.TokenType.Refresh => now.AddDays(jwt.RefreshTokenExpiry),
+            Token.TokenType.Access => now.AddDays(jwt.AccessTokenExpiry),
+            _ => now.AddMinutes(jwt.RefreshTokenExpiry)
+        };
 
+        var claims = new List<Claim> {
+            new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new(JwtRegisteredClaimNames.Iat, new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64)
+        };
+
+        if (type != Token.TokenType.Refresh)
+        {
+            claims.Add(new Claim(ClaimTypes.Email, user.Email));
+            claims.Add(
+                type == Token.TokenType.Access
+                    ? new(ClaimTypes.NameIdentifier, user.Id.ToString())
+                    : new("purpose", "reset-password")
+            );
+        }
+
+        var secret = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.Key));
+        var creds = new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
+
+        var token = new JwtSecurityToken(
+            issuer: jwt.Issuer,
+            audience: jwt.Audience,
+            claims: claims,
+            expires: expires,
+            signingCredentials: creds
+        );
+
+        return new JwtSecurityTokenHandler().WriteToken(token);
+    }
 }
