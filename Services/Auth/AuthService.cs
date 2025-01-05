@@ -72,6 +72,7 @@ public class AuthService(
         var validationErrors = new Dictionary<string, string>();
 
         var principal = TokenUtil.ValidateToken(request.Refresh, jwt, env);
+
         if (principal is null)
         {
             validationErrors.Add("token", "Invalid refresh token.");
@@ -139,6 +140,7 @@ public class AuthService(
             {
                 var resetToken = TokenUtil.GenerateToken(user, jwt, Token.TokenType.Reset);
                 var resetUrl = $"{app.URL}?token={resetToken}";
+                var resetLink = $"http://localhost:5077/reset-password?token={resetToken}";
 
                 await authRepository.SaveTokenAsync(
                     user,
@@ -150,7 +152,7 @@ public class AuthService(
                 emailQueue.QueueEmail(
                     [user.Email],
                     "Password Reset Request",
-                    EmailTemplate.ForgotPasswordTemplate("Password Reset Request", resetUrl)
+                    EmailTemplate.ForgotPasswordTemplate("We received a request to reset your password. If you did not make this request, please ignore this email. </br> To reset your password, click the button below:", resetUrl)
                 );
 
                 await transaction.CommitAsync();
@@ -202,6 +204,7 @@ public class AuthService(
         }
 
         var user = await authRepository.GetUserByCredentialsAsync(emailClaim);
+
         if (user is null)
         {
             validationErrors.Add("user", "Invalid credentials.");
@@ -213,7 +216,7 @@ public class AuthService(
         }
 
         var isTokenValid = user.Tokens.Any(t =>
-            t.Value == resetToken &&
+            t.Value.Equals(resetToken) &&
             !t.IsRevoked &&
             t.ExpiresAt > DateTime.UtcNow
         );
@@ -231,7 +234,7 @@ public class AuthService(
         await using var transaction = await context.Database.BeginTransactionAsync();
         try
         {
-            var activeTokens = user.Tokens.Where(t => t.ExpiresAt > DateTime.Now && !t.IsRevoked);
+            var activeTokens = user.Tokens.Where(t => t.ExpiresAt > DateTime.UtcNow && !t.IsRevoked);
             foreach (var activeToken in activeTokens)
             {
                 activeToken.IsRevoked = true;
