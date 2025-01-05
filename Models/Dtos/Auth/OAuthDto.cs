@@ -11,7 +11,7 @@ public class OAuthDto : BaseUserDto
     [Required(ErrorMessage = "Provider ID is required.")]
     public string ProviderId { get; init; } = string.Empty;
 
-    public string? ProfilePicture { get; init; }
+    public string? Image { get; init; }
 
     [StringLength(100, MinimumLength = 2, ErrorMessage = "FirstName must be at least 2 characters.")]
     public string? FirstName { get; init; }
