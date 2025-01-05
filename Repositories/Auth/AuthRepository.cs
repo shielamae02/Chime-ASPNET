@@ -20,7 +20,7 @@ namespace Chime_ASPNET.Repositories.Auth
                 .AnyAsync();
         }
 
-         public async Task<User?> GetUserByCredentialsAsync(string email, string? providerId = null, User.AuthenticationType? provider = null)
+        public async Task<User?> GetUserByCredentialsAsync(string email, string? providerId = null, User.AuthenticationType? provider = null)
         {
             return await context.Users
                 .Include(u => u.Tokens)
@@ -30,5 +30,11 @@ namespace Chime_ASPNET.Repositories.Auth
                 .FirstOrDefaultAsync();
         }
 
+        public async Task<Token?> GetTokenByRefreshAsync(string refresh)
+        {
+            return await context.Tokens.FirstOrDefaultAsync(t => t.Value == refresh);
+        }
+
+    
     }
 }
