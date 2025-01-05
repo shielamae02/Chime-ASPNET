@@ -321,6 +321,36 @@ public class AuthService(
     }
     #endregion
 
+    #region LoginAsync
+    private async Task<ApiResponse<AuthDto>> LoginAsync<T>(
+       T request, Func<T, Task<User?>> getUserFunc, Func<T, User?, bool>? validateCredentials = null)
+    {
+        var validationErrors = new Dictionary<string, string>();
+
+        var user = await getUserFunc(request);
+
+        if (user is null || (validateCredentials != null && !validateCredentials(request, user)))
+        {
+            validationErrors.Add("user", "Invalid user credentials.");
+            return ApiResponse<AuthDto>.ErrorResponse(
+                Error.ValidationError,
+                Error.ErrorType.ValidationError,
+                validationErrors
+            );
+        }
+
+        var tokens = await CreateAndSaveTokensAsync(user);
+
+        var response = new AuthDto
+        {
+            Token = tokens,
+            User = mapper.Map<UserDto>(user)
+        };
+
+        return ApiResponse<AuthDto>.SuccessResponse(Success.IS_AUTHENTICATED, response);
+    }
+    #endregion
+
 
 
 }
