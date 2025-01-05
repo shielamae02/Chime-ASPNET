@@ -106,7 +106,28 @@ namespace Chime_ASPNET.Controllers
             }
         }
 
+        [HttpPost("logout")]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        public async Task<IActionResult> LogoutUser([FromBody] RefreshTokenDto request)
+        {
+            try
+            {
+                var response = await authService.LogoutUserAsync(request);
+
+                return (!response)
+                    ? BadRequest(new { Message = "Invalid refresh token." })
+                    : NoContent();
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An exception occurred while refreshing the user token.");
+                return Problem("An error occurred while processing your request. Please try again later.");
+            }
+        }
+
         
+
 
 
 
