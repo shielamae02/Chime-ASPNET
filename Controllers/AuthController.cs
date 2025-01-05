@@ -146,5 +146,31 @@ namespace Chime_ASPNET.Controllers
             }
         }
 
+        [HttpPost("reset-password")]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        public async Task<IActionResult> ResetPassword(
+           [Required][FromQuery] string resetToken,
+           [FromBody] ResetPasswordDto request)
+        {
+            if (!ModelState.IsValid) return BadRequest(ControllerUtil.GenerateValidationError(ModelState));
+
+            try
+            {
+                var response = await authService.ResetPasswordAsync(resetToken, request);
+
+                return response.Status.Equals("error")
+                    ? ControllerUtil.GetResultFromError(response)
+                    : Ok(response);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An exception occurred while trying to reset the user password.");
+                return Problem("An error occurred while processing your request. Please try again later.");
+            }
+        }
+
+
+
     }
 }
