@@ -14,6 +14,30 @@ namespace Chime_ASPNET.Controllers
         ILogger<AuthController> logger
     ) : ControllerBase
     {
+        [HttpPost("register")]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        public async Task<IActionResult> RegisterUser([FromBody] RegisterDto request)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ControllerUtil.GenerateValidationError(ModelState));
+
+            try
+            {
+                var response = await authService.RegisterUserAsync(request);
+
+                return response.Status.Equals("error")
+                    ? ControllerUtil.GetResultFromError(response)
+                    : StatusCode(StatusCodes.Status201Created, response);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An exception occurred while registering a new user.");
+                return Problem("An error occurred while processing your request. Please try again later.");
+            }
+        }
+
         
+
     }
 }
