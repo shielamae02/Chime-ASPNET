@@ -49,4 +49,17 @@ public static class TokenUtil
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
+
+    public static TokenDto GenerateTokens(User user, JWTSettings jwt, string? access = null, string? refresh = null)
+    {
+        return new TokenDto
+        {
+            Access = (access is null)
+                ? GenerateToken(user, jwt, Token.TokenType.Access)
+                : access,
+            Refresh = (refresh is null)
+                ? GenerateToken(user, jwt, Token.TokenType.Refresh)
+                : refresh
+        };
+    }
 }
